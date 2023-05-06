@@ -1,35 +1,33 @@
 
 use super::states;
-
+use super::player;
+use std::cmp;
 struct Cell {
     _i: u32,
     _j: u32
 }
 
 pub struct Game {
-    
     // private
     state   : Option<Box<dyn states::State>>,
     
     _colls  : u32,
     _rows   : u32,
-    _box    : Vec<Cell>
+    _box    : Vec<Cell>,
+    _p_index: u32,
+    _players: Vec<Box<dyn player::Player>>
 }
 
 impl Game {    
-    pub fn init(&mut self) {
-        // init filed data
-        let convert =  |index| -> Cell {
-            let i: u32 = index / self._colls;
-            let j: u32 = index - i * self._colls;
-            return Cell {
-                _i: i,
-                _j: j
-            };
-        };
-
-        let it = (0..(self._colls*self._rows)).map(convert);
-        self._box = it.collect();
+    pub fn init(&mut self) {        
+        (0..self._colls).for_each(|i|{
+            (0..self._rows).for_each(|j|{
+                self._box.push(Cell {
+                    _i: i,
+                    _j: j
+                });
+            });
+        });
     }
     
     pub fn update(&mut self) -> bool {            
@@ -44,9 +42,28 @@ impl Game {
             state: Some(Box::new (states::Intro{})),
             _colls  : colls,
             _rows   : rows,
-            _box: Vec::new()
+            _box    : Vec::new(),
+            _p_index: 0,
+            _players: vec![
+                Box::new(player::Human{}),
+                Box::new(player::Bot{})
+            ]
         };
         g.init();
         return g;
-    }        
+    }
+    
+    pub fn player_turn(&mut self) {
+        println!("player{} turn", self._p_index);
+        self._players[self._p_index as usize].turn();
+        self._p_index += 1;
+        if self._p_index == 2 {
+            self._p_index = 0;
+        }
+    }
+    
+    pub fn is_game_over(&self) -> bool {
+        return false;
+    }
+    
 }
