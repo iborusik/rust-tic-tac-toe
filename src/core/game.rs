@@ -1,6 +1,9 @@
 
 use super::states;
 use super::player;
+use super::input;
+use super::view;
+
 use std::cmp;
 struct Cell {
     _i: u32,
@@ -15,7 +18,9 @@ pub struct Game {
     _rows   : u32,
     _box    : Vec<Cell>,
     _p_index: u32,
-    _players: Vec<Box<dyn player::Player>>
+    _players: Vec<Box<dyn player::Player>>,
+    _view   : Box<dyn view::View>,
+    _input  : Box<dyn input::Input>
 }
 
 impl Game {    
@@ -37,7 +42,7 @@ impl Game {
         return true;
     }
     
-    pub fn new(colls: u32, rows: u32) -> Game {
+    pub fn new(colls: u32, rows: u32, view: Box<dyn view::View>, input: Box<dyn input::Input>) -> Game {
         let mut g = Game {
             state: Some(Box::new (states::Intro{})),
             _colls  : colls,
@@ -47,7 +52,9 @@ impl Game {
             _players: vec![
                 Box::new(player::Human{}),
                 Box::new(player::Bot{})
-            ]
+            ],
+            _view: view,
+            _input: input
         };
         g.init();
         return g;
@@ -64,6 +71,10 @@ impl Game {
     
     pub fn is_game_over(&self) -> bool {
         return false;
+    }
+    
+    pub fn draw(&self) {
+        
     }
     
 }

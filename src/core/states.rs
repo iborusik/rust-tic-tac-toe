@@ -1,6 +1,5 @@
 use super::Game;
 use std::{thread, time};
-
 pub trait State {
     fn update(self: Box<Self>, game: &mut Game) -> Box<dyn State>;
     
