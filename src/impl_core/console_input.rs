@@ -1,4 +1,4 @@
-use super::super::core;
+use crate::core;
 
 pub struct ConsoleInput {
 }

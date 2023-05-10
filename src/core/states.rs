@@ -49,7 +49,6 @@ impl State for  PlayerTurn {
     fn update(self: Box<Self>, game: &mut Game) -> Box<dyn State> {
         println!("PlayerTurn");  
         game.player_turn();
-        thread::sleep(time::Duration::from_secs(1));
         if game.is_game_over() {
             return Box::new(GameOver{});
         }   

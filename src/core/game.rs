@@ -1,10 +1,10 @@
 
+use super::game_logic::GameLogic;
 use super::states;
 use super::player;
 use super::input;
 use super::view;
 
-use std::cmp;
 struct Cell {
     _i: u32,
     _j: u32
@@ -20,7 +20,8 @@ pub struct Game {
     _p_index: u32,
     _players: Vec<Box<dyn player::Player>>,
     _view   : Box<dyn view::View>,
-    _input  : Box<dyn input::Input>
+    _input  : Box<dyn input::Input>,
+    _logic  : GameLogic
 }
 
 impl Game {    
@@ -54,7 +55,8 @@ impl Game {
                 Box::new(player::Bot{})
             ],
             _view: view,
-            _input: input
+            _input: input,
+            _logic: GameLogic {  }
         };
         g.init();
         return g;
@@ -62,7 +64,9 @@ impl Game {
     
     pub fn player_turn(&mut self) {
         println!("player{} turn", self._p_index);
-        self._players[self._p_index as usize].turn();
+        let player = &self._players[self._p_index as usize];
+        let turn_result = player.turn(self);
+        self._logic.apply_turn(turn_result);
         self._p_index += 1;
         if self._p_index == 2 {
             self._p_index = 0;
