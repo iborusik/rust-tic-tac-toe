@@ -1,5 +1,9 @@
+use crate::core::core_types::TurnApplyResult;
+
 use super::Game;
 use std::{thread, time};
+use super::core_types;
+
 pub trait State {
     fn update(self: Box<Self>, game: &mut Game) -> Box<dyn State>;
     
@@ -48,11 +52,21 @@ impl State for Idle {
 impl State for  PlayerTurn {
     fn update(self: Box<Self>, game: &mut Game) -> Box<dyn State> {
         println!("PlayerTurn");  
-        game.player_turn();
-        if game.is_game_over() {
-            return Box::new(GameOver{});
-        }   
-        return Box::new(DisplayField{});
+        let result = game.player_turn();
+        match result {
+            TurnApplyResult::Valid => {
+                if game.is_game_over() {
+                    return Box::new(GameOver{});
+                }                
+            }
+                        
+            TurnApplyResult::NoValid => {
+                print!("not valid move");
+                return Box::new(PlayerTurn{});
+            }            
+        }
+        
+        Box::new(DisplayField{})
     }    
 }
 

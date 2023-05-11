@@ -1,22 +1,22 @@
 
+use crate::core::core_types::TurnApplyResult;
+
 use super::game_logic::GameLogic;
 use super::states;
 use super::player;
 use super::input;
 use super::view;
-
-struct Cell {
-    _i: u32,
-    _j: u32
-}
+use super::core_types::Cells;
+use super::core_types::Cell;
 
 pub struct Game {
+    
     // private
     state   : Option<Box<dyn states::State>>,
     
     _colls  : u32,
     _rows   : u32,
-    _box    : Vec<Cell>,
+    _box    : Cells,
     _p_index: u32,
     _players: Vec<Box<dyn player::Player>>,
     _view   : Box<dyn view::View>,
@@ -30,7 +30,8 @@ impl Game {
             (0..self._rows).for_each(|j|{
                 self._box.push(Cell {
                     _i: i,
-                    _j: j
+                    _j: j,
+                    _color: None
                 });
             });
         });
@@ -62,23 +63,32 @@ impl Game {
         return g;
     }
     
-    pub fn player_turn(&mut self) {
+    pub fn player_turn(&mut self) -> TurnApplyResult {
         println!("player{} turn", self._p_index);
         let player = &self._players[self._p_index as usize];
         let turn_result = player.turn(self);
-        self._logic.apply_turn(turn_result);
-        self._p_index += 1;
-        if self._p_index == 2 {
-            self._p_index = 0;
+        let result = self._logic.apply_turn(turn_result, &mut self._box, self.n, self.m);
+        
+        match result {
+            TurnApplyResult::Valid => {
+                self._p_index += 1;
+                if self._p_index == 2 {
+                    self._p_index = 0;
+                }                
+            },
+            TurnApplyResult::NoValid => {
+                print!("no valid move");
+            } 
         }
+
+        result
     }
     
     pub fn is_game_over(&self) -> bool {
         return false;
     }
     
-    pub fn draw(&self) {
-        
+    pub fn draw(&self) {        
     }
     
 }
