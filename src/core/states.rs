@@ -36,14 +36,13 @@ impl State for Intro {
 
 impl State for DisplayField {
     fn update(self: Box<Self>, game: &mut Game) -> Box<dyn State> {
-        println!("DrawField");
+        game.draw();
         return Box::new(PlayerTurn{});
     }
 }
 
 impl State for Idle {
     fn update(self: Box<Self>, game: &mut Game) -> Box<dyn State> {
-        println!("idle...");
         thread::sleep(time::Duration::from_secs(1));            
         return self;
     }
@@ -51,7 +50,6 @@ impl State for Idle {
 
 impl State for  PlayerTurn {
     fn update(self: Box<Self>, game: &mut Game) -> Box<dyn State> {
-        println!("PlayerTurn");  
         let result = game.player_turn();
         match result {
             TurnApplyResult::Valid => {

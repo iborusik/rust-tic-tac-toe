@@ -53,7 +53,7 @@ impl Game {
             _p_index: 0,
             _players: vec![
                 Box::new(player::Human{}),
-                Box::new(player::Bot{})
+                Box::new(player::Human{})
             ],
             _view: view,
             _input: input,
@@ -64,10 +64,11 @@ impl Game {
     }
     
     pub fn player_turn(&mut self) -> TurnApplyResult {
-        println!("player{} turn", self._p_index);
+        println!("player: {} -> turn", self._p_index);
         let player = &self._players[self._p_index as usize];
-        let turn_result = player.turn(self);
-        let result = self._logic.apply_turn(turn_result, &mut self._box, self.n, self.m);
+        let mut turn_result = player.turn(self);
+        turn_result.player_index = self._p_index;
+        let result = self._logic.apply_turn(turn_result, &mut self._box, self._rows, self._colls);        
         
         match result {
             TurnApplyResult::Valid => {
@@ -88,7 +89,24 @@ impl Game {
         return false;
     }
     
-    pub fn draw(&self) {        
+    pub fn draw(&self) {       
+        self._view.draw(self);
     }
+    
+    pub fn input(&self) -> &Box<dyn input::Input> {
+        return  &self._input;
+    }
+    
+    pub fn rows(&self) -> u32 {
+        self._rows
+    }
+    
+    pub fn colls(&self) -> u32 {
+        self._colls
+    }
+    
+    pub fn cells(&self) -> &Cells {
+        return &self._box;
+    } 
     
 }

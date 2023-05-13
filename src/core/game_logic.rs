@@ -8,11 +8,11 @@ pub struct GameLogic {
 }
 
 impl GameLogic {
-    pub fn apply_turn(&mut self, r: TurnData, cells: &mut Cells, n: u32, m: u32) -> TurnApplyResult {
-        if r.i >= n || r.j >= m {
+    pub fn apply_turn(&mut self, r: TurnData, cells: &mut Cells, rows: u32, colls: u32) -> TurnApplyResult {
+        if r.i >= rows || r.j >= colls {
             return TurnApplyResult::NoValid;
         }
-        let cell = &mut cells[(r.i + r.j) as usize];
+        let cell = &mut cells[(r.i * colls + r.j) as usize];
         
         match cell._color {
             Some(x) => {
