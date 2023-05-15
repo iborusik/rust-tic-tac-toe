@@ -5,11 +5,9 @@ pub trait Player {
     fn turn(&self, game: &Game) -> core_types::TurnData;
 }
 
-pub struct Human {
-}
+pub struct Human { }
 
-pub struct Bot {
-}
+pub struct Bot { }
 
 impl Player for Human {
     fn turn(&self, game: &Game) -> core_types::TurnData {

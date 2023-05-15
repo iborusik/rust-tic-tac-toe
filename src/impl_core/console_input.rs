@@ -13,7 +13,8 @@ impl core::Input for ConsoleInput {
                 std::io::stdin().read_line(&mut line).unwrap();
                 let _rr = line.parse::<i32>();
                 line.remove(line.len() - 1);
-                parsed = line.parse::<i32>().unwrap_or(-1);                
+                parsed = line.parse::<i32>().unwrap_or(-1);              
+                parsed -= 1;  
                 if parsed >= 0 {
                     break;
                 }

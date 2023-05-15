@@ -60,7 +60,7 @@ impl State for  PlayerTurn {
                         
             TurnApplyResult::NoValid => {
                 print!("not valid move");
-                return Box::new(PlayerTurn{});
+                return Box::new(DisplayField{});
             }            
         }
         

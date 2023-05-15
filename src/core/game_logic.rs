@@ -24,8 +24,7 @@ impl GameLogic {
                 cell._color = Some(r.player_index)
             }
         }
-        
-        // todo: apply turn logic here        
+                      
         TurnApplyResult::Valid
-    }    
+    } 
 }

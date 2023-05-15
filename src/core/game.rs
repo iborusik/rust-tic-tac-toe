@@ -1,5 +1,7 @@
 
 use crate::core::core_types::TurnApplyResult;
+use crate::core::core_types::TurnData;
+use crate::core::player::Player;
 
 use super::game_logic::GameLogic;
 use super::states;
@@ -38,7 +40,7 @@ impl Game {
     }
     
     pub fn update(&mut self) -> bool {            
-        if let Some(s) = self.state.take() {
+        if let Some(s)= self.state.take() {
             self.state = Some(s.update(self));
         }        
         return true;
@@ -57,18 +59,21 @@ impl Game {
             ],
             _view: view,
             _input: input,
-            _logic: GameLogic {  }
+            _logic: GameLogic { }
         };
         g.init();
         return g;
     }
     
     pub fn player_turn(&mut self) -> TurnApplyResult {
-        println!("player: {} -> turn", self._p_index);
-        let player = &self._players[self._p_index as usize];
-        let mut turn_result = player.turn(self);
+        println!("player: {} -> turn", match self._p_index {1 => "x", _ => "0"});
+        let player: &Box<dyn Player> = &self._players[self._p_index as usize];
+        let mut turn_result: TurnData = player.turn(self);
         turn_result.player_index = self._p_index;
-        let result = self._logic.apply_turn(turn_result, &mut self._box, self._rows, self._colls);        
+        let result: TurnApplyResult = self._logic.apply_turn(turn_result, 
+            &mut self._box, 
+            self._rows, 
+            self._colls);        
         
         match result {
             TurnApplyResult::Valid => {
