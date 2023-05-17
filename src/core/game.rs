@@ -23,7 +23,8 @@ pub struct Game {
     _players: Vec<Box<dyn player::Player>>,
     _view   : Box<dyn view::View>,
     _input  : Box<dyn input::Input>,
-    _logic  : GameLogic
+    _logic  : GameLogic,
+    _win    : Option<u32>
 }
 
 impl Game {    
@@ -59,7 +60,8 @@ impl Game {
             ],
             _view: view,
             _input: input,
-            _logic: GameLogic { }
+            _logic: GameLogic { },
+            _win: None
         };
         g.init();
         return g;
@@ -75,6 +77,16 @@ impl Game {
             self._rows, 
             self._colls);        
         
+        let win = self._logic.check_win(&self._box, 
+            self._p_index,
+            self._rows,
+            self._colls,
+            None);
+            
+        if win {
+            self._win = Some(self._p_index);
+        }
+            
         match result {
             TurnApplyResult::Valid => {
                 self._p_index += 1;
@@ -90,8 +102,8 @@ impl Game {
         result
     }
     
-    pub fn is_game_over(&self) -> bool {
-        return false;
+    pub fn is_game_over(&self) -> bool {        
+        return self._win.is_some();
     }
     
     pub fn draw(&self) {       
@@ -113,5 +125,9 @@ impl Game {
     pub fn cells(&self) -> &Cells {
         return &self._box;
     } 
+    
+    pub fn get_win_index(&self) -> u32 {
+         return self._win.unwrap();
+    }
     
 }

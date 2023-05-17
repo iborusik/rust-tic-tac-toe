@@ -25,6 +25,7 @@ pub struct PlayerTurn {
 }
 
 pub struct GameOver {
+        
 }
 
 impl State for Intro {
@@ -54,14 +55,15 @@ impl State for  PlayerTurn {
         match result {
             TurnApplyResult::Valid => {
                 if game.is_game_over() {
+                    println!("Player {} wins", game.get_win_index());
                     return Box::new(GameOver{});
                 }                
             }
-                        
+  
             TurnApplyResult::NoValid => {
                 print!("not valid move");
                 return Box::new(DisplayField{});
-            }            
+            }
         }
         
         Box::new(DisplayField{})
