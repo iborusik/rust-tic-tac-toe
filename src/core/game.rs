@@ -3,7 +3,7 @@ use crate::core::core_types::TurnApplyResult;
 use crate::core::core_types::TurnData;
 use crate::core::player::Player;
 
-use super::game_logic::GameLogic;
+use super::game_logic;
 use super::states;
 use super::player;
 use super::input;
@@ -23,7 +23,6 @@ pub struct Game {
     _players: Vec<Box<dyn player::Player>>,
     _view   : Box<dyn view::View>,
     _input  : Box<dyn input::Input>,
-    _logic  : GameLogic,
     _win    : Option<u32>
 }
 
@@ -59,8 +58,7 @@ impl Game {
                 Box::new(player::Human{})
             ],
             _view: view,
-            _input: input,
-            _logic: GameLogic { },
+            _input: input,           
             _win: None
         };
         g.init();
@@ -72,12 +70,12 @@ impl Game {
         let player: &Box<dyn Player> = &self._players[self._p_index as usize];
         let mut turn_result: TurnData = player.turn(self);
         turn_result.player_index = self._p_index;
-        let result: TurnApplyResult = self._logic.apply_turn(turn_result, 
+        let result: TurnApplyResult = game_logic::apply_turn(turn_result, 
             &mut self._box, 
             self._rows, 
             self._colls);        
         
-        let win = self._logic.check_win(&self._box, 
+        let win = game_logic::check_win(&self._box, 
             self._p_index,
             self._rows,
             self._colls,
