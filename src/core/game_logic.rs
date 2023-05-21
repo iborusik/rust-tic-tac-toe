@@ -22,7 +22,7 @@ pub fn get_cell_diagonal<'a>(cells: &'a Cells, diag: ECellDiag, i: u32, j: u32, 
             }                                
             let up = i - 1;
             let dn = i + 1;
-            for i in up..dn {
+            for i in up..dn + 1 {
                 l.push_back(&cells[(i*colls + j) as usize]);
             }
         }
@@ -33,7 +33,7 @@ pub fn get_cell_diagonal<'a>(cells: &'a Cells, diag: ECellDiag, i: u32, j: u32, 
             }                                
             let left = j - 1;
             let right = j + 1;
-            for j in left..right {
+            for j in left..right + 1 {
                 l.push_back(&cells[(i*colls + j) as usize]);
             }                
         }
@@ -76,17 +76,16 @@ pub fn apply_turn(r: TurnData, cells: &mut Cells, rows: u32, colls: u32) -> Turn
     }
                     
     TurnApplyResult::Valid
-} 
+}
 
-pub fn check_win(grid: &Cells, player_color: u32, rows: u32, colls: u32, extra: Option<(u32, u32)>) -> bool {
-
+pub fn check_line_win(cells: &Option<LinkedList<&Cell>>, color: u32, extra: Option<(u32, u32)>) -> bool {
     let check_extra = |i: u32, j: u32| -> Option<u32> {
         let ret: Option<u32> = match extra {
             None => Option::<u32>::None,
             Some((x ,y)) => {
                 let mut r = Option::<u32>::None;
                 if x == i && j == y {
-                    r = Some(player_color)                        
+                    r = Some(color)                        
                 }                    
                 r
             } 
@@ -94,49 +93,51 @@ pub fn check_win(grid: &Cells, player_color: u32, rows: u32, colls: u32, extra: 
         ret
     };
     
-    let check_list_win = |cells: &Option<LinkedList<&Cell>>, color:u32| -> bool {
-        match &cells {
-            None => false,
-            &Some(x) => {
-                let res = x.iter().all(|cell| {
-                    match cell._color {
-                        None => {
-                            let extra = check_extra(cell._i, cell._j);
-                            if let Some(x) = extra {
-                                return x == color;
-                            } else {
-                                return false;
-                            }                                
-                        },
-                        
-                        Some(x) => {
+    let res: bool = match &cells {
+        None => false,
+        &Some(x) => {
+            let res = x.iter().all(|cell: &&Cell| {
+                match cell._color {
+                    None => {
+                        let extra = check_extra(cell._i, cell._j);
+                        if let Some(x) = extra {
                             return x == color;
-                        }
-                    }            
-                });
-                return res;
-            }
+                        } else {
+                            return false;
+                        }                                
+                    },
+                    
+                    Some(x) => {
+                        return x == color;
+                    }
+                }            
+            });
+            return res;
         }
     };
-    
+
+    res
+}
+
+pub fn check_win(grid: &Cells, player_color: u32, rows: u32, colls: u32, extra: Option<(u32, u32)>) -> bool {
     let mut win = false;        
     for i in 0 .. rows {
         for j in 0 .. colls {                
             // vert
             let diag: Option<LinkedList<&Cell>> = get_cell_diagonal(grid, ECellDiag::Vertical, i, j, rows, colls);
-            win |= check_list_win(&diag, player_color);
+            win |= check_line_win(&diag, player_color, extra);
             
             // hor
             let diag: Option<LinkedList<&Cell>> = get_cell_diagonal(grid, ECellDiag::Horizontal, i, j, rows, colls);
-            win |= check_list_win(&diag, player_color);
+            win |= check_line_win(&diag, player_color, extra);
             
             // positive diag
-            //let diag: Option<LinkedList<&Cell>> = self.get_cell_diagonal(grid, ECellDiag::Negative, i, j, rows, colls);
-            //win |= check_list_win(&diag, player_color);
+            let diag: Option<LinkedList<&Cell>> = get_cell_diagonal(grid, ECellDiag::Negative, i, j, rows, colls);
+            win |= check_line_win(&diag, player_color, extra);
             
             // negative diag                
-            //let diag: Option<LinkedList<&Cell>> = self.get_cell_diagonal(grid, ECellDiag::Positive, i, j, rows, colls);                
-            //win |= check_list_win(&diag, player_color);
+            let diag: Option<LinkedList<&Cell>> = get_cell_diagonal(grid, ECellDiag::Positive, i, j, rows, colls);                
+            win |= check_line_win(&diag, player_color, extra);
             
             if win {
                 break;

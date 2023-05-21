@@ -22,7 +22,7 @@ impl Player for Human {
 }
 
 impl Player for Bot {
-    fn turn(&self, game: &Game)  -> core_types::TurnData {
+    fn turn(&self, _game: &Game)  -> core_types::TurnData {
         println!("bot turn");
         core_types::TurnData {
             i: 0,
