@@ -1,6 +1,5 @@
 
 use super::common_test;
-use super::game;
 use super::game_logic;
 use super::core_types::Cell;
 
@@ -10,6 +9,8 @@ fn tst_cell_diagonal() {
     let colls = 3;
             
     let grid = common_test::tests::create_grid(rows, colls);
+    
+    // horizontal
     {
         let diag = game_logic::get_cell_diagonal(&grid, game_logic::ECellDiag::Horizontal , 0, 0, rows, colls);    
         assert!(diag.is_none(), "diag failed");
@@ -43,6 +44,68 @@ fn tst_cell_diagonal() {
         assert!(c2._i == rows - 1 && c2._j == 1);
         assert!(c3._i == rows - 1 && c3._j == 2);
     }
+    
+    // vertical
+    {
+        let diag = game_logic::get_cell_diagonal(&grid, game_logic::ECellDiag::Vertical , 0, 0, rows, colls);    
+        assert!(diag.is_none());
+        
+        let diag = game_logic::get_cell_diagonal(&grid, game_logic::ECellDiag::Vertical , 1, 0, rows, colls);    
+        let cells = diag.unwrap();
+        let mut b = cells.iter();
+        let c1 = b.next().unwrap();
+        let c2 = b.next().unwrap();
+        let c3 = b.next().unwrap();
+    
+        assert!(cells.len() == 3);
+        assert!(c1._i == 0 && c1._j == 0);
+        assert!(c2._i == 1 && c2._j == 0);
+        assert!(c3._i == 2 && c3._j == 0);     
+    }
+    
+    // positive
+    {
+        let diag = game_logic::get_cell_diagonal(&grid, game_logic::ECellDiag::Positive , 0, 0, rows, colls);    
+        assert!(diag.is_none());
+        let diag = game_logic::get_cell_diagonal(&grid, game_logic::ECellDiag::Positive , 1, 0, rows, colls);    
+        assert!(diag.is_none());        
+        
+        let diag = game_logic::get_cell_diagonal(&grid, game_logic::ECellDiag::Positive , 1, 1, rows, colls);    
+        assert!(diag.is_some());
+        let cells = diag.unwrap();
+        
+        let mut b = cells.iter();
+        let c1 = b.next().unwrap();
+        let c2 = b.next().unwrap();
+        let c3 = b.next().unwrap();
+    
+        assert!(cells.len() == 3);
+        assert!(c1._i == 2 && c1._j == 0);
+        assert!(c2._i == 1 && c2._j == 1);
+        assert!(c3._i == 0 && c3._j == 2);     
+    }    
+    
+    // negative
+    {
+        let diag = game_logic::get_cell_diagonal(&grid, game_logic::ECellDiag::Negative , 0, 0, rows, colls);    
+        assert!(diag.is_none());
+        let diag = game_logic::get_cell_diagonal(&grid, game_logic::ECellDiag::Negative , 1, 0, rows, colls);    
+        assert!(diag.is_none());        
+        
+        let diag = game_logic::get_cell_diagonal(&grid, game_logic::ECellDiag::Negative , 1, 1, rows, colls);    
+        assert!(diag.is_some());
+        let cells = diag.unwrap();
+        
+        let mut b = cells.iter();
+        let c1 = b.next().unwrap();
+        let c2 = b.next().unwrap();
+        let c3 = b.next().unwrap();
+    
+        assert!(cells.len() == 3);
+        assert!(c1._i == 0 && c1._j == 0);
+        assert!(c2._i == 1 && c2._j == 1);
+        assert!(c3._i == 2 && c3._j == 2);     
+    }     
 }
 
 fn clear_gread(cells: &mut Vec<Cell>) {
@@ -71,6 +134,7 @@ fn test_win_lines()
     set_cell_color(&mut grid, 0, 0, color, colls);
     set_cell_color(&mut grid, 0, 1, color, colls);
     
+    // horizontal diagonal
     {            
         let diag: Option<std::collections::LinkedList<&Cell>> = game_logic::get_cell_diagonal(&grid, game_logic::ECellDiag::Horizontal , 0, 1, rows, colls); 
         let win_line = game_logic::check_line_win(&diag, color, None);

@@ -15,4 +15,9 @@ pub struct Cell {
     pub _color: Option<u32>
 }
 
+pub enum PlayerType {
+    EHuman,
+    EBot
+}
+
 pub type Cells = Vec<Cell>;

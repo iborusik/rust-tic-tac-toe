@@ -3,6 +3,7 @@ use crate::core::core_types::TurnApplyResult;
 use crate::core::core_types::TurnData;
 use crate::core::player::Player;
 
+use super::core_types::PlayerType;
 use super::game_logic;
 use super::states;
 use super::player;
@@ -53,10 +54,7 @@ impl Game {
             _rows   : rows,
             _box    : Vec::new(),
             _p_index: 0,
-            _players: vec![
-                Box::new(player::Human{}),
-                Box::new(player::Human{})
-            ],
+            _players: vec![],
             _view: view,
             _input: input,           
             _win: None
@@ -65,11 +63,24 @@ impl Game {
         return g;
     }
     
+    pub fn add_players(&mut self, players: Vec<PlayerType>) {
+        let mut ind: i32 = -1;
+        self._players = players.into_iter().map(|t| -> Box<dyn Player> {
+           ind += 1;
+           match t {
+               PlayerType::EHuman => Box::new(player::Human::new(ind as u32)),
+               PlayerType::EBot => Box::new(player::Bot::new(ind as u32))
+           }            
+        }).collect();
+    }
+    
     pub fn player_turn(&mut self) -> TurnApplyResult {
         println!("player: {} -> turn", match self._p_index {1 => "x", _ => "0"});
         let player: &Box<dyn Player> = &self._players[self._p_index as usize];
+        
         let mut turn_result: TurnData = player.turn(self);
         turn_result.player_index = self._p_index;
+        
         let result: TurnApplyResult = game_logic::apply_turn(turn_result, 
             &mut self._box, 
             self._rows, 

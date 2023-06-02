@@ -39,11 +39,35 @@ pub fn get_cell_diagonal<'a>(cells: &'a Cells, diag: ECellDiag, i: u32, j: u32, 
         }
         
         ECellDiag::Positive => {
-            todo!();
+            if j == 0 || j == colls - 1 {
+                return None;
+            }
+            if i == 0 || i == rows - 1 {
+                return None;
+            }
+            let left = j - 1;
+            let right = j + 1;
+            let mut bottom = i + 1;
+            for j in left..right + 1 {
+                l.push_back(&cells[(bottom*colls + j) as usize]);                
+                bottom = bottom.saturating_sub(1);
+            }   
         }
         
         ECellDiag::Negative => {
-            todo!();
+            if j == 0 || j == colls - 1 {
+                return None;
+            }
+            if i == 0 || i == rows - 1 {
+                return None;
+            }
+            let left = j - 1;
+            let right = j + 1;
+            let mut bottom = i - 1;
+            for j in left..right + 1 {               
+                l.push_back(&cells[(bottom*colls + j) as usize]);
+                bottom += 1; 
+            }  
         }       
     }
 
